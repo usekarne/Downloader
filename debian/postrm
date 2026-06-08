@@ -1,0 +1,55 @@
+#!/bin/bash
+set -e
+
+# RS Downloader v10.0.0 - Post-removal script
+# Author: RAJSARASWATI JATAV (RS)
+
+VENV_DIR="/opt/rs-downloader/venv"
+APP_DIR="/opt/rs-downloader"
+
+echo "Cleaning up RS Downloader..."
+
+# Remove virtual environment
+if [ -d "${VENV_DIR}" ]; then
+    rm -rf "${VENV_DIR}"
+    echo "Removed virtual environment."
+fi
+
+# On purge, remove everything
+if [ "$1" = "purge" ]; then
+    # Remove application directory
+    if [ -d "${APP_DIR}" ]; then
+        rm -rf "${APP_DIR}"
+        echo "Removed application directory."
+    fi
+
+    # Remove system config
+    if [ -d /etc/rs-downloader ]; then
+        rm -rf /etc/rs-downloader
+        echo "Removed system configuration."
+    fi
+
+    # Remove system cache
+    if [ -d /var/cache/rs-downloader ]; then
+        rm -rf /var/cache/rs-downloader
+        echo "Removed cache."
+    fi
+
+    # Remove system logs
+    if [ -d /var/log/rs-downloader ]; then
+        rm -rf /var/log/rs-downloader
+        echo "Removed logs."
+    fi
+
+    # Remind about user config
+    if [ -d "${HOME}/.rs-downloader" ]; then
+        echo "Note: User config at ~/.rs-downloader was preserved."
+        echo "To remove: rm -rf ~/.rs-downloader"
+    fi
+fi
+
+# Clean up any remaining symlinks
+rm -f /usr/bin/rsdl 2>/dev/null || true
+rm -f /usr/local/bin/rsdl 2>/dev/null || true
+
+echo "RS Downloader post-removal complete."

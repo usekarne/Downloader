@@ -1,0 +1,189 @@
+# RS Downloader v10.0.0 - Modern Python Project Configuration
+# Author: RAJSARASWATI JATAV (RS)
+# License: MIT
+
+[build-system]
+requires = ["setuptools>=68.0", "wheel>=0.42.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rs-downloader"
+version = "10.0.0"
+description = "The Ultimate Download Toolkit by RS - Video, Audio, Playlist & Batch Downloading"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "RAJSARASWATI JATAV", email = "rs@t3rmuxk1ng.dev"},
+]
+maintainers = [
+    {name = "RAJSARASWATI JATAV", email = "rs@t3rmuxk1ng.dev"},
+]
+keywords = [
+    "downloader", "video", "audio", "youtube", "playlist",
+    "batch-download", "yt-dlp", "rs-downloader", "t3rmuxk1ng",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Utilities",
+]
+dependencies = [
+    "requests>=2.31.0",
+    "aiohttp>=3.9.0",
+    "yt-dlp>=2024.0.0",
+    "rich>=13.0.0",
+    "click>=8.1.0",
+    "colorama>=0.4.6",
+    "tqdm>=4.66.0",
+    "beautifulsoup4>=4.12.0",
+    "pycryptodome>=3.19.0",
+    "Pillow>=10.0.0",
+    "mutagen>=1.47.0",
+    "ffmpeg-python>=0.2.0",
+    "httpx>=0.25.0",
+    "aiofiles>=23.2.0",
+    "pydantic>=2.5.0",
+    "platformdirs>=4.0.0",
+    "prometheus-client>=0.19.0",
+    "psutil>=5.9.0",
+    "certifi>=2023.0.0",
+    "urllib3>=2.0.0",
+    "socksio>=1.0.0",
+]
+
+[project.optional-dependencies]
+cloud = [
+    "boto3>=1.34.0",
+    "google-cloud-storage>=2.14.0",
+    "azure-storage-blob>=12.19.0",
+]
+torrent = [
+    "libtorrent>=2.0.0",
+]
+ai = [
+    "openai>=1.6.0",
+    "langchain>=0.1.0",
+]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.12.0",
+    "isort>=5.13.0",
+    "mypy>=1.8.0",
+    "flake8>=7.0.0",
+    "pylint>=3.0.0",
+    "pre-commit>=3.6.0",
+]
+all = [
+    "boto3>=1.34.0",
+    "google-cloud-storage>=2.14.0",
+    "azure-storage-blob>=12.19.0",
+    "libtorrent>=2.0.0",
+    "openai>=1.6.0",
+    "langchain>=0.1.0",
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.23.0",
+    "pytest-cov>=4.1.0",
+    "black>=23.12.0",
+    "isort>=5.13.0",
+    "mypy>=1.8.0",
+]
+
+[project.scripts]
+rsdl = "rs_toolkit:main"
+
+[project.urls]
+Homepage = "https://github.com/T3rmuxk1ng/rs-downloader"
+Documentation = "https://github.com/T3rmuxk1ng/rs-downloader/wiki"
+Repository = "https://github.com/T3rmuxk1ng/rs-downloader"
+"Bug Tracker" = "https://github.com/T3rmuxk1ng/rs-downloader/issues"
+Changelog = "https://github.com/T3rmuxk1ng/rs-downloader/releases"
+
+[tool.setuptools]
+packages = {find = {exclude = ["tests", "tests.*", "docs", "docs.*"]}}
+include-package-data = true
+
+[tool.setuptools.package-data]
+rs_toolkit = ["py.typed", "config/*.json"]
+
+[tool.black]
+line-length = 100
+target-version = ["py310", "py311", "py312"]
+skip-string-normalization = true
+exclude = '''
+/(
+    \.git
+  | \.mypy_cache
+  | \.pytest_cache
+  | __pycache__
+  | venv
+  | \.venv
+  | build
+  | dist
+  | \.eggs
+  | *.egg-info
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 100
+known_first_party = ["rs_toolkit"]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+skip = [".git", "__pycache__", "venv", ".venv", "build", "dist"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+show_error_codes = true
+ignore_missing_imports = true
+exclude = [
+    "venv/",
+    ".venv/",
+    "build/",
+    "dist/",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --strict-markers"
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks integration tests",
+    "network: marks tests requiring network",
+    "unit: marks unit tests",
+]
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+source = ["rs_toolkit"]
+omit = ["tests/*", "setup.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "raise NotImplementedError",
+]

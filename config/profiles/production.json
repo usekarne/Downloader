@@ -1,0 +1,103 @@
+{
+    "_meta": {
+        "name": "RS Downloader Production Configuration",
+        "version": "10.0.0",
+        "author": "RAJSARASWATI JATAV (RS)",
+        "description": "Production profile - optimized for stability and performance",
+        "inherits": "default"
+    },
+
+    "download": {
+        "max_concurrent_downloads": 5,
+        "max_retries": 5,
+        "retry_delay_seconds": 10,
+        "timeout_seconds": 600,
+        "resume_partial": true,
+        "overwrite_existing": false,
+        "auto_convert": false
+    },
+
+    "video": {
+        "preferred_quality": "1080",
+        "embed_thumbnail": true,
+        "embed_metadata": true,
+        "embed_subtitle": true,
+        "subtitle_langs": ["en", "hi"],
+        "sponsorblock_remove": "sponsor,intro,outro"
+    },
+
+    "audio": {
+        "preferred_quality": "320",
+        "output_format": "mp3",
+        "embed_thumbnail": true,
+        "embed_metadata": true,
+        "normalize_audio": true
+    },
+
+    "network": {
+        "connection_timeout": 60,
+        "read_timeout": 120,
+        "max_connections": 20,
+        "use_ipv4": true
+    },
+
+    "storage": {
+        "cache_max_size_mb": 4096,
+        "cache_expiry_days": 7,
+        "max_history_entries": 5000,
+        "temp_cleanup_on_exit": true,
+        "min_disk_space_mb": 1000,
+        "organize_by_type": true,
+        "organize_by_date": true
+    },
+
+    "ui": {
+        "progress_bar_style": "rich",
+        "verbose": false,
+        "quiet": false,
+        "color_output": true,
+        "compact_mode": true
+    },
+
+    "logging": {
+        "log_level": "WARNING",
+        "log_to_file": true,
+        "log_to_console": false,
+        "log_max_size_mb": 50,
+        "log_backup_count": 10,
+        "log_requests": false
+    },
+
+    "performance": {
+        "worker_threads": 8,
+        "async_downloads": true,
+        "buffer_size": 20480,
+        "prefetch_chunks": 5,
+        "memory_limit_mb": 1024,
+        "connection_pool_size": 200
+    },
+
+    "monitoring": {
+        "enabled": true,
+        "prometheus_port": 9090,
+        "track_bandwidth": true,
+        "track_download_count": true,
+        "track_error_count": true,
+        "health_check_interval": 30
+    },
+
+    "security": {
+        "verify_ssl": true,
+        "check_hashes": true,
+        "sanitize_filenames": true,
+        "encrypt_credentials": true
+    },
+
+    "updates": {
+        "auto_check": true,
+        "check_interval_hours": 12,
+        "update_channel": "stable",
+        "notify_on_update": true,
+        "auto_update": false
+    }
+}

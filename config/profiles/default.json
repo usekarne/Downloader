@@ -1,0 +1,319 @@
+{
+    "_meta": {
+        "name": "RS Downloader Default Configuration",
+        "version": "10.0.0",
+        "author": "RAJSARASWATI JATAV (RS)",
+        "description": "Default configuration profile for RS Downloader v10.0.0",
+        "created": "2024-01-01T00:00:00Z"
+    },
+
+    "download": {
+        "output_dir": "~/Downloads/rs-downloader",
+        "temp_dir": "/tmp/rs-downloader",
+        "filename_template": "%(title)s.%(ext)s",
+        "max_concurrent_downloads": 3,
+        "max_retries": 3,
+        "retry_delay_seconds": 5,
+        "timeout_seconds": 300,
+        "chunk_size": 8192,
+        "resume_partial": true,
+        "overwrite_existing": false,
+        "auto_convert": false
+    },
+
+    "video": {
+        "preferred_format": "bestvideo+bestaudio/best",
+        "preferred_quality": "1080",
+        "preferred_codec": "auto",
+        "merge_output_format": "mp4",
+        "prefer_free_formats": false,
+        "embed_thumbnail": true,
+        "embed_subtitle": false,
+        "subtitle_langs": ["en"],
+        "embed_metadata": true,
+        "write_description": false,
+        "write_info_json": false,
+        "write_annotations": false,
+        "sponsorblock_mark": "",
+        "sponsorblock_remove": ""
+    },
+
+    "audio": {
+        "preferred_format": "best",
+        "preferred_quality": "320",
+        "preferred_codec": "auto",
+        "output_format": "mp3",
+        "embed_thumbnail": true,
+        "embed_metadata": true,
+        "write_playlist": false,
+        "add_album_art": true,
+        "normalize_audio": false
+    },
+
+    "playlist": {
+        "download_full_playlist": true,
+        "playlist_start": 1,
+        "playlist_end": -1,
+        "playlist_items": "",
+        "playlist_reverse": false,
+        "playlist_random": false,
+        "create_playlist_folder": true,
+        "number_episodes": true,
+        "max_playlist_items": 0,
+        "playlist_output_template": "%(playlist_title)s/%(playlist_index)03d - %(title)s.%(ext)s"
+    },
+
+    "batch": {
+        "batch_file": "",
+        "batch_delay_seconds": 1,
+        "batch_mode": "sequential",
+        "batch_max_parallel": 3,
+        "batch_continue_on_error": true,
+        "batch_log_errors": true,
+        "batch_save_progress": true,
+        "batch_progress_file": "~/.rs-downloader/batch_progress.json"
+    },
+
+    "network": {
+        "proxy": "",
+        "proxy_username": "",
+        "proxy_password": "",
+        "source_address": "",
+        "use_ipv4": false,
+        "use_ipv6": false,
+        "connection_timeout": 30,
+        "read_timeout": 60,
+        "max_connections": 10,
+        "rate_limit": "",
+        "throttle_delay": 0,
+        "cookies_file": "",
+        "cookies_from_browser": "",
+        "user_agent": "",
+        "referer": ""
+    },
+
+    "authentication": {
+        "username": "",
+        "password": "",
+        "netrc_location": "~/.netrc",
+        "use_netrc": false,
+        "two_factor": "",
+        "video_password": "",
+        "api_key": "",
+        "oauth_token": ""
+    },
+
+    "conversion": {
+        "ffmpeg_path": "ffmpeg",
+        "ffprobe_path": "ffprobe",
+        "postprocessor_args": [],
+        "convert_to_mp4": false,
+        "convert_to_mp3": false,
+        "convert_to_flac": false,
+        "audio_quality": "0",
+        "video_preset": "medium",
+        "video_crf": 23,
+        "recode_video": "",
+        "remux_video": "",
+        "extract_audio": false
+    },
+
+    "storage": {
+        "cache_dir": "~/.rs-downloader/cache",
+        "cache_max_size_mb": 1024,
+        "cache_expiry_days": 30,
+        "history_file": "~/.rs-downloader/history.json",
+        "max_history_entries": 1000,
+        "temp_cleanup_on_exit": true,
+        "min_disk_space_mb": 500,
+        "organize_by_site": false,
+        "organize_by_date": false,
+        "organize_by_type": true
+    },
+
+    "ui": {
+        "theme": "dark",
+        "progress_bar_style": "rich",
+        "show_download_speed": true,
+        "show_eta": true,
+        "show_total_size": true,
+        "show_bytes_received": true,
+        "verbose": false,
+        "quiet": false,
+        "no_warnings": false,
+        "color_output": true,
+        "ascii_only": false,
+        "compact_mode": false
+    },
+
+    "logging": {
+        "log_level": "INFO",
+        "log_file": "~/.rs-downloader/logs/rs-downloader.log",
+        "log_max_size_mb": 10,
+        "log_backup_count": 5,
+        "log_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        "log_date_format": "%Y-%m-%d %H:%M:%S",
+        "log_to_file": true,
+        "log_to_console": true,
+        "log_requests": false
+    },
+
+    "scheduling": {
+        "enabled": false,
+        "scheduler_type": "simple",
+        "cron_expression": "",
+        "max_concurrent_scheduled": 1,
+        "retry_on_failure": true,
+        "max_schedule_retries": 3,
+        "schedule_delay_minutes": 0,
+        "notify_on_complete": false,
+        "notify_on_error": true
+    },
+
+    "notifications": {
+        "enabled": false,
+        "notify_on_download_complete": true,
+        "notify_on_download_error": true,
+        "notify_on_batch_complete": true,
+        "desktop_notifications": true,
+        "sound_on_complete": false,
+        "webhook_url": "",
+        "webhook_method": "POST",
+        "email_enabled": false,
+        "email_smtp_host": "",
+        "email_smtp_port": 587,
+        "email_username": "",
+        "email_password": "",
+        "email_from": "",
+        "email_to": "",
+        "email_use_tls": true
+    },
+
+    "cloud": {
+        "enabled": false,
+        "provider": "",
+        "upload_after_download": false,
+        "aws_access_key_id": "",
+        "aws_secret_access_key": "",
+        "aws_region": "us-east-1",
+        "aws_s3_bucket": "",
+        "gcs_project_id": "",
+        "gcs_bucket": "",
+        "azure_connection_string": "",
+        "azure_container": ""
+    },
+
+    "torrent": {
+        "enabled": false,
+        "download_dir": "~/Downloads/rs-downloader/torrents",
+        "max_connections": 200,
+        "max_uploads": 4,
+        "listen_port": 6881,
+        "enable_dht": true,
+        "enable_lsd": true,
+        "enable_pex": true,
+        "encryption": "prefer",
+        "proxy_host": "",
+        "proxy_port": 0,
+        "proxy_type": ""
+    },
+
+    "ai": {
+        "enabled": false,
+        "provider": "",
+        "auto_name_files": false,
+        "auto_organize": false,
+        "suggest_quality": false,
+        "openai_api_key": "",
+        "openai_model": "gpt-4",
+        "custom_endpoint": "",
+        "max_tokens": 1000
+    },
+
+    "security": {
+        "verify_ssl": true,
+        "ssl_cert_file": "",
+        "check_hashes": false,
+        "hash_algorithm": "sha256",
+        "sanitize_filenames": true,
+        "max_filename_length": 255,
+        "restricted_characters": "/\\:*?\"<>|",
+        "encrypt_credentials": true,
+        "credentials_key": ""
+    },
+
+    "advanced": {
+        "debug_mode": false,
+        "dry_run": false,
+        "simulate": false,
+        "skip_download": false,
+        "print_json": false,
+        "dump_pages": false,
+        "write_debug_file": false,
+        "extractor_retries": 3,
+        "file_access_retries": 3,
+        "fragment_retries": 10,
+        "retries_on_http_error": [],
+        "sleep_interval": 0,
+        "max_sleep_interval": 0,
+        "sleep_interval_requests": 0,
+        "external_downloader": "",
+        "external_downloader_args": [],
+        "use_archive": false,
+        "archive_file": "~/.rs-downloader/archive.txt"
+    },
+
+    "performance": {
+        "worker_threads": 4,
+        "async_downloads": true,
+        "buffer_size": 10240,
+        "prefetch_chunks": 3,
+        "memory_limit_mb": 512,
+        "gc_interval_seconds": 300,
+        "enable_mmap": false,
+        "tcp_keepalive": true,
+        "connection_pool_size": 100
+    },
+
+    "monitoring": {
+        "enabled": false,
+        "prometheus_port": 9090,
+        "prometheus_host": "127.0.0.1",
+        "metrics_prefix": "rsdl",
+        "track_bandwidth": true,
+        "track_download_count": true,
+        "track_error_count": true,
+        "track_active_downloads": true,
+        "health_check_interval": 60,
+        "health_check_url": ""
+    },
+
+    "plugins": {
+        "enabled": true,
+        "plugin_dir": "~/.rs-downloader/plugins",
+        "auto_load": true,
+        "load_on_startup": [],
+        "disabled_plugins": [],
+        "plugin_config": {}
+    },
+
+    "updates": {
+        "auto_check": true,
+        "check_interval_hours": 24,
+        "update_channel": "stable",
+        "include_prereleases": false,
+        "notify_on_update": true,
+        "auto_update": false,
+        "backup_before_update": true,
+        "update_source": "pypi"
+    },
+
+    "regional": {
+        "geo_bypass": false,
+        "geo_bypass_country": "",
+        "geo_bypass_ip_block": "",
+        "prefer_insecure": false,
+        "language": "en",
+        "timezone": "UTC"
+    }
+}

@@ -1,0 +1,20 @@
+Package: rs-downloader
+Version: 10.0.0
+Section: net
+Priority: optional
+Architecture: all
+Essential: no
+Installed-Size: 10240
+Maintainer: RAJSARASWATI JATAV <rs@t3rmuxk1ng.dev>
+Homepage: https://github.com/T3rmuxk1ng/rs-downloader
+Depends: python3 (>= 3.10), python3-pip, ffmpeg, python3-venv
+Recommends: python3-dev, libssl-dev, libffi-dev, build-essential
+Suggests: yt-dlp
+Conflicts: rs-downloader-nightly
+Replaces: rs-downloader-beta
+Provides: rs-downloader
+Description: The Ultimate Download Toolkit
+ RS Downloader is the ultimate download toolkit by RS (RAJSARASWATI JATAV).
+ It supports video, audio, playlist, and batch downloading from hundreds
+ of websites. Built with Python, it features a rich CLI, async downloads,
+ progress tracking, and extensive configuration options.

@@ -1,0 +1,24 @@
+#!/bin/bash
+set -e
+
+# RS Downloader v10.0.0 - Pre-removal script
+# Author: RAJSARASWATI JATAV (RS)
+
+echo "Stopping RS Downloader..."
+
+# Terminate any running rsdl processes
+if pgrep -f "rs_toolkit" >/dev/null 2>&1; then
+    echo "Terminating running RS Downloader processes..."
+    pkill -TERM -f "rs_toolkit" 2>/dev/null || true
+    sleep 2
+    # Force kill if still running
+    if pgrep -f "rs_toolkit" >/dev/null 2>&1; then
+        pkill -KILL -f "rs_toolkit" 2>/dev/null || true
+    fi
+fi
+
+# Remove command symlinks
+rm -f /usr/bin/rsdl 2>/dev/null || true
+rm -f /usr/local/bin/rsdl 2>/dev/null || true
+
+echo "RS Downloader stopped."

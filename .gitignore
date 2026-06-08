@@ -1,0 +1,105 @@
+# RS Downloader v10.0.0 - Python .gitignore
+# Author: RAJSARASWATI JATAV (RS)
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+*.egg
+.eggs/
+develop-eggs/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Environments
+.env
+.env.local
+.env.*.local
+
+# IDE / Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# pyproject
+*.whl
+*.tar.gz
+
+# RS Downloader specific
+.rs-downloader/
+*.log
+downloads/
+torrents/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre
+.pyre/
+
+# pytype
+.pytype/
+
+# Ruff
+.ruff_cache/
+
+# Pre-commit
+.pre-commit-config.yaml
+
+# Package build artifacts
+build_deb/build/
+*.deb
+
+# OS files
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+
+# Secrets
+credentials.json
+cookies.txt
+.netrc
+*.pem
+*.key

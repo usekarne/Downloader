@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install build tools
+        run: |
+          pip install build
+          sudo apt-get update && sudo apt-get install -y dpkg-dev
+
+      - name: Build Python packages
+        run: python -m build
+
+      - name: Build .deb package
+        run: bash build_deb.sh
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: RS Downloader v${{ steps.version.outputs.VERSION }}
+          body: |
+            ## RS Downloader v${{ steps.version.outputs.VERSION }}
+
+            The Ultimate Download Toolkit by RAJSARASWATI JATAV (RS)
+
+            ### Installation
+            ```bash
+            # From PyPI
+            pip install rs-downloader==${{ steps.version.outputs.VERSION }}
+
+            # From .deb
+            sudo dpkg -i rs-downloader_${{ steps.version.outputs.VERSION }}_all.deb
+            ```
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
+            build/*.deb
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to PyPI
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+        run: |
+          pip install twine
+          twine upload dist/* -u __token__ -p ${{ secrets.PYPI_TOKEN }}

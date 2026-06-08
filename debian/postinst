@@ -1,0 +1,56 @@
+#!/bin/bash
+set -e
+
+# RS Downloader v10.0.0 - Post-installation script
+# Author: RAJSARASWATI JATAV (RS)
+
+VENV_DIR="/opt/rs-downloader/venv"
+APP_DIR="/opt/rs-downloader"
+
+echo "Setting up RS Downloader..."
+
+# Create virtual environment
+if [ ! -d "${VENV_DIR}" ]; then
+    python3 -m venv "${VENV_DIR}" || {
+        echo "ERROR: Failed to create virtual environment" >&2
+        exit 1
+    }
+    echo "Virtual environment created."
+fi
+
+# Activate and install dependencies
+source "${VENV_DIR}/bin/activate" 2>/dev/null || true
+
+pip install --upgrade pip setuptools wheel -q 2>/dev/null || true
+
+if [ -f "${APP_DIR}/requirements.txt" ]; then
+    pip install -r "${APP_DIR}/requirements.txt" -q 2>/dev/null || true
+fi
+
+if [ -f "${APP_DIR}/setup.py" ] || [ -f "${APP_DIR}/pyproject.toml" ]; then
+    pip install -e "${APP_DIR}" -q 2>/dev/null || true
+fi
+
+deactivate 2>/dev/null || true
+
+# Create command symlink
+if [ -f "${VENV_DIR}/bin/rsdl" ]; then
+    ln -sf "${VENV_DIR}/bin/rsdl" /usr/bin/rsdl
+else
+    cat > /usr/bin/rsdl << 'WRAPPER'
+#!/bin/bash
+source /opt/rs-downloader/venv/bin/activate 2>/dev/null || true
+python3 -m rs_toolkit "$@"
+WRAPPER
+    chmod +x /usr/bin/rsdl
+fi
+
+# Set permissions
+chmod -R 755 /opt/rs-downloader 2>/dev/null || true
+chown -R root:root /opt/rs-downloader 2>/dev/null || true
+
+# Create config directory
+mkdir -p /etc/rs-downloader/profiles 2>/dev/null || true
+chmod 755 /etc/rs-downloader 2>/dev/null || true
+
+echo "RS Downloader v10.0.0 installed. Run 'rsdl --help' to get started."
