@@ -97,7 +97,7 @@ class DeviantArtDownloader(DownloaderBase):
             try:
                 resp = requests.get(url, headers=self.headers, timeout=self.timeout)
                 if resp.status_code == 200:
-                    og_img = re.search(r'og:image["\s]+content=["']([^"']+)', resp.text)
+                    og_img = re.search(r'og:image["\s]+content=["\']([^"\']+)', resp.text)
                     if og_img:
                         metadata["thumbnail"] = og_img.group(1)
                     title = re.search(r'<title>([^<]+)</title>', resp.text)

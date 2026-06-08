@@ -1165,8 +1165,14 @@ class DownloadLifecycle:
 
 @dataclass(frozen=True)
 class AgentSkill:
-    """Describes an agent's capabilities."""
-    platform: str
+    """Describes an agent's capabilities.
+
+    Supports both core field names and common aliases:
+    - name → mapped to platform (for backward compatibility)
+    - supported_formats → mapped to formats
+    - supported_qualities → mapped to qualities
+    """
+    platform: str = ""
     formats: Tuple[str, ...] = ()
     qualities: Tuple[str, ...] = ()
     features: Tuple[str, ...] = ()
@@ -1174,6 +1180,28 @@ class AgentSkill:
     priority: int = 5
     version: str = "1.0.0"
     description: str = ""
+
+    def __init__(self, platform: str = "", formats: Tuple[str, ...] = (),
+                 qualities: Tuple[str, ...] = (), features: Tuple[str, ...] = (),
+                 max_concurrent: int = 3, priority: int = 5,
+                 version: str = "1.0.0", description: str = "",
+                 # Aliases for backward compatibility with agents
+                 name: str = "",
+                 supported_formats = None,
+                 supported_qualities = None) -> None:
+        # Map aliases to canonical fields
+        effective_platform = platform or name
+        effective_formats = formats if supported_formats is None else tuple(supported_formats) if not isinstance(supported_formats, tuple) else supported_formats
+        effective_qualities = qualities if supported_qualities is None else tuple(supported_qualities) if not isinstance(supported_qualities, tuple) else supported_qualities
+
+        object.__setattr__(self, 'platform', effective_platform)
+        object.__setattr__(self, 'formats', effective_formats)
+        object.__setattr__(self, 'qualities', effective_qualities)
+        object.__setattr__(self, 'features', features)
+        object.__setattr__(self, 'max_concurrent', max_concurrent)
+        object.__setattr__(self, 'priority', priority)
+        object.__setattr__(self, 'version', version)
+        object.__setattr__(self, 'description', description)
 
 
 # ---------------------------------------------------------------------------
@@ -2429,10 +2457,25 @@ class DownloaderBase(abc.ABC):
         features: Tuple[str, ...] = (),
         max_concurrent: int = 3,
         priority: int = 5,
+        **kwargs,
     ) -> None:
         self.name = name
+        self.platform = platform
+        self.formats = formats
+        self.qualities = qualities
+        self.features = features
+        self.max_concurrent = max_concurrent
+        self.priority = priority
+        # Store any extra kwargs for agent-specific config
+        self._extra = kwargs
+        # Common agent attributes that agents may access
+        self.headers = kwargs.get('headers', {})
+        self.proxy = kwargs.get('proxy', '')
+        self.timeout = kwargs.get('timeout', 30)
+        self.output_dir = kwargs.get('output_dir', '.')
+        self.memory = kwargs.get('memory', AgentMemory(name))
         self.skill = AgentSkill(
-            platform=platform,
+            platform=platform or name,
             formats=formats,
             qualities=qualities,
             features=features,
@@ -2518,20 +2561,27 @@ class DownloaderBase(abc.ABC):
             client.close()
         return result
 
-    def on_verify(self, task: DownloadTask, result: DownloadResult) -> DownloadResult:
+    def on_verify(self, task: DownloadTask = None, result: DownloadResult = None) -> DownloadResult:
         """
         Post-download verification hook.
 
         Override to add custom verification logic.
+        Supports both (self, task, result) and (self, result) signatures.
 
         Args:
-            task: The download task.
-            result: The download result so far.
+            task: The download task (optional for backward compatibility).
+            result: The download result so far (optional for backward compatibility).
 
         Returns:
-            Updated result.
+            Updated result (or True/bool if agent returns bool).
         """
-        if task.checksum and result.output_path:
+        # Handle (self, result) calls from agents that don't pass task
+        if task is None and result is not None:
+            # Agent called on_verify(self, result) — return result directly
+            return result
+        if result is None:
+            return DownloadResult()
+        if task and task.checksum and result.output_path:
             try:
                 algo = ChecksumAlgorithm(task.checksum_algo)
                 result.checksum_verified = verify_checksum(result.output_path, task.checksum, algo)
@@ -2541,30 +2591,37 @@ class DownloaderBase(abc.ABC):
                 result.error = f"Verification error: {e}"
         return result
 
-    def on_post_process(self, task: DownloadTask, result: DownloadResult) -> DownloadResult:
+    def on_post_process(self, task: DownloadTask = None, result: DownloadResult = None) -> DownloadResult:
         """
         Post-processing hook (extraction, conversion, etc.).
 
         Override to add custom post-processing.
+        Supports both (self, task, result) and (self, result) signatures.
 
         Args:
-            task: The download task.
-            result: The download result.
+            task: The download task (optional for backward compatibility).
+            result: The download result (optional for backward compatibility).
 
         Returns:
-            Updated result.
+            Updated result (or None if agent returns None).
         """
+        # Handle (self, result) calls from agents
+        if task is None and result is not None:
+            return result
+        if result is None:
+            return DownloadResult()
         return result
 
-    def on_cleanup(self, task: DownloadTask, result: DownloadResult) -> None:
+    def on_cleanup(self, task: DownloadTask = None, result: DownloadResult = None) -> None:
         """
         Cleanup hook after download.
 
         Override to add custom cleanup logic.
+        Supports flexible argument signatures.
 
         Args:
-            task: The download task.
-            result: The download result.
+            task: The download task (optional).
+            result: The download result (optional).
         """
         pass
 
