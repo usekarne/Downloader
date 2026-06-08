@@ -247,12 +247,12 @@ class TikTokDownloader(DownloaderBase):
     # Lifecycle: Verify & Post-Process
     # -------------------------------------------------------------------
 
-    def on_verify(self, result: DownloadResult) -> bool:
+    def on_verify(self, task=None, result=None):
         if not result.output_path or not os.path.exists(result.output_path):
             return False
         return os.path.getsize(result.output_path) > 0
 
-    def on_post_process(self, result: DownloadResult) -> DownloadResult:
+    def on_post_process(self, task=None, result=None):
         if result.output_path and os.path.exists(result.output_path):
             result.metadata["checksum"] = self._compute_checksum(result.output_path)
             result.metadata["checksum_algorithm"] = "sha256"

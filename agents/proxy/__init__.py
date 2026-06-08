@@ -16,6 +16,7 @@ from core.downloader_base import (
     DownloaderBase,
     DownloadResult,
     DownloadStatus,
+    DownloadTask,
     AgentSkill,
     AgentMemory,
     DownloadPriority,
@@ -61,26 +62,31 @@ class ProxyAgent(DownloaderBase):
                 "unhealthy": sum(1 for p in self._proxy_list if not p.get("healthy", True)),
             }
 
-    def on_prepare(self) -> None:
+    def on_prepare(self, task: DownloadTask) -> DownloadTask:
         """Prepare proxy management."""
-        pass
+        return task
 
-    def on_download(self) -> DownloadResult:
+    def on_download(self, task: DownloadTask) -> DownloadResult:
         """Proxy agent 'download' performs health checks on all proxies."""
         results = self.health_check_all()
         return DownloadResult(
-            task_id=self._task_id if hasattr(self, '_task_id') else "proxy-check",
-            status=DownloadStatus.COMPLETED.value,
+            task_id=task.task_id if task else "proxy-check",
+            url=task.url if task else "",
+            status=DownloadStatus.COMPLETED,
             metadata={"check_results": results},
         )
 
-    def on_verify(self) -> bool:
+    def on_verify(self, task: DownloadTask = None, result: DownloadResult = None) -> DownloadResult:
         """Verify proxy check results."""
-        return True
+        if result is not None:
+            return result
+        return DownloadResult(status=DownloadStatus.COMPLETED)
 
-    def on_post_process(self) -> None:
+    def on_post_process(self, task: DownloadTask = None, result: DownloadResult = None) -> DownloadResult:
         """No post-processing for proxy management."""
-        pass
+        if result is not None:
+            return result
+        return DownloadResult(status=DownloadStatus.COMPLETED)
 
     # -- Proxy Management Methods --
 

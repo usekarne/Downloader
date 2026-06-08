@@ -29,7 +29,6 @@ from core.downloader_base import (
     DownloadResult, DownloadStatus, DownloadTask, DownloaderBase,
 )
 
-
 class PinterestDownloader(DownloaderBase):
     """Pinterest download agent for pins, boards, and videos."""
 
@@ -230,13 +229,24 @@ class PinterestDownloader(DownloaderBase):
     def _safe_filename(name: str) -> str:
         return re.sub(r'[<>:"|?*\\]', '_', name)[:200]
 
-    def on_verify(self, result: DownloadResult) -> bool:
+    def on_verify(self, task: DownloadTask = None, result: DownloadResult = None) -> DownloadResult:
+        if result is None:
+            return DownloadResult(status=DownloadStatus.FAILED, error="No result to verify")
         if not result.file_path or not os.path.exists(result.file_path):
-            return False
-        return os.path.getsize(result.file_path) > 0
-
-    def on_post_process(self, result: DownloadResult) -> DownloadResult:
+            result.status = DownloadStatus.FAILED
+            result.error = "Downloaded file not found"
+            return result
+        if os.path.getsize(result.file_path) > 0:
+            result.status = DownloadStatus.COMPLETED
+        else:
+            result.status = DownloadStatus.FAILED
+            result.error = "Downloaded file is empty"
         return result
+
+    def on_post_process(self, task: DownloadTask = None, result: DownloadResult = None) -> DownloadResult:
+        if result is not None:
+            return result
+        return DownloadResult()
 
 
 def register() -> Tuple[str, AgentSkill]:

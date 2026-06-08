@@ -149,6 +149,7 @@ class DownloadResult:
     url: str = ""
     filename: str = ""
     output_path: str = ""
+    file_path: str = ""
     file_size: int = 0
     elapsed: float = 0.0
     average_speed: float = 0.0
@@ -2653,21 +2654,42 @@ class DownloaderBase(abc.ABC):
         )
 
         try:
+            # 0. Schedule & Queue
+            if lifecycle.can_transition(DownloadStatus.SCHEDULING):
+                lifecycle.transition(DownloadStatus.SCHEDULING)
+            if lifecycle.can_transition(DownloadStatus.QUEUED):
+                lifecycle.transition(DownloadStatus.QUEUED)
+
             # 1. Prepare
             task = self.on_prepare(task)
 
             # 2. Download
-            lifecycle.transition(DownloadStatus.DOWNLOADING)
+            if lifecycle.can_transition(DownloadStatus.DOWNLOADING):
+                lifecycle.transition(DownloadStatus.DOWNLOADING)
             result = self.on_download(task)
 
-            # 3. Verify (only if download succeeded)
-            if result.status == DownloadStatus.COMPLETED:
+            # 3. Verify (only if download succeeded or ready for verification)
+            # Agents may set VERIFYING to indicate download succeeded and needs verification
+            if result.status in (DownloadStatus.COMPLETED, DownloadStatus.VERIFYING):
                 lifecycle.transition(DownloadStatus.VERIFYING)
-                result = self.on_verify(task, result)
+                verify_result = self.on_verify(task, result)
+                # Handle bool returns from legacy agent implementations
+                if isinstance(verify_result, bool):
+                    if not verify_result:
+                        result.status = DownloadStatus.FAILED
+                        result.error = "Verification failed"
+                    else:
+                        result.status = DownloadStatus.COMPLETED
+                else:
+                    result = verify_result
 
-                # 4. Post-process
-                lifecycle.transition(DownloadStatus.EXTRACTING)
-                result = self.on_post_process(task, result)
+                # 4. Post-process (only if still successful after verify)
+                if result.status == DownloadStatus.COMPLETED:
+                    lifecycle.transition(DownloadStatus.EXTRACTING)
+                    pp_result = self.on_post_process(task, result)
+                    # Handle None returns from legacy agent implementations
+                    if pp_result is not None and not isinstance(pp_result, bool):
+                        result = pp_result
 
                 # 5. Complete
                 lifecycle.transition(DownloadStatus.COMPLETED)

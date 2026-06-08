@@ -291,14 +291,14 @@ class LiveDownloader(DownloaderBase):
             result.error = str(exc)
         return result
 
-    def on_verify(self, result: DownloadResult) -> bool:
+    def on_verify(self, task=None, result=None):
         """Verify recorded stream file."""
         if not result.file_path or not os.path.exists(result.file_path):
             return False
         # For live recordings, even small files are valid
         return os.path.getsize(result.file_path) > 1024  # At least 1KB
 
-    def on_post_process(self, result: DownloadResult) -> DownloadResult:
+    def on_post_process(self, task=None, result=None):
         """Post-process: optionally convert to MP4, capture thumbnail."""
         if not result.file_path or not os.path.exists(result.file_path):
             return result

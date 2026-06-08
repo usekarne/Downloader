@@ -164,14 +164,14 @@ class LibriVoxDownloader(DownloaderBase):
         result.elapsed = time.monotonic() - start_time
         return result
 
-    def on_verify(self, result: DownloadResult) -> bool:
+    def on_verify(self, task=None, result=None):
         if not result.file_path or not os.path.exists(result.file_path):
             return False
         if os.path.isdir(result.file_path):
             return any(Path(result.file_path).iterdir())
         return os.path.getsize(result.file_path) > 0
 
-    def on_post_process(self, result: DownloadResult) -> DownloadResult:
+    def on_post_process(self, task=None, result=None):
         if result.file_path and os.path.isfile(result.file_path):
             result.checksum = self._compute_checksum(result.file_path)
             result.checksum_algorithm = "sha256"

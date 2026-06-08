@@ -256,7 +256,7 @@ except ImportError:
     AGENTS_AVAILABLE = False
 
 try:
-    from core.database import DatabaseManager
+    from core.database import Database as DatabaseManager
     DB_AVAILABLE = True
 except ImportError:
     DB_AVAILABLE = False

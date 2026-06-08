@@ -476,7 +476,7 @@ class YouTubeDownloader(DownloaderBase):
     # Lifecycle: Verify
     # -------------------------------------------------------------------
 
-    def on_verify(self, result: DownloadResult) -> bool:
+    def on_verify(self, task=None, result=None):
         """Verify the downloaded file exists and has non-zero size."""
         if not result.output_path:
             return False
@@ -488,7 +488,7 @@ class YouTubeDownloader(DownloaderBase):
     # Lifecycle: Post-Process
     # -------------------------------------------------------------------
 
-    def on_post_process(self, result: DownloadResult) -> DownloadResult:
+    def on_post_process(self, task=None, result=None):
         """Post-process: collect extra files, compute checksum."""
         if not result.output_path or not os.path.exists(result.output_path):
             return result

@@ -249,7 +249,7 @@ class YouTubeMusicDownloader(DownloaderBase):
     # Lifecycle: Verify
     # -------------------------------------------------------------------
 
-    def on_verify(self, result: DownloadResult) -> bool:
+    def on_verify(self, task=None, result=None):
         """Verify downloaded audio file."""
         if not result.output_path or not os.path.exists(result.output_path):
             return False
@@ -259,7 +259,7 @@ class YouTubeMusicDownloader(DownloaderBase):
     # Lifecycle: Post-Process
     # -------------------------------------------------------------------
 
-    def on_post_process(self, result: DownloadResult) -> DownloadResult:
+    def on_post_process(self, task=None, result=None):
         """Post-process: checksum, collect extra files."""
         if result.output_path and os.path.exists(result.output_path):
             result.metadata["checksum"] = self._compute_checksum(result.output_path)

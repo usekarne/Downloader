@@ -17,10 +17,10 @@ from core.downloader_base import (
     DownloaderBase,
     DownloadResult,
     DownloadStatus,
+    DownloadTask,
     AgentSkill,
     AgentMemory,
     DownloadPriority,
-    DownloadTask,
     DownloadQueue,
 )
 
@@ -69,10 +69,10 @@ class SchedulerAgent(DownloaderBase):
                 "schedules": list(self._schedules.keys()),
             }
 
-    def on_prepare(self) -> None:
-        pass
+    def on_prepare(self, task: DownloadTask) -> DownloadTask:
+        return task
 
-    def on_download(self) -> DownloadResult:
+    def on_download(self, task: DownloadTask) -> DownloadResult:
         """Scheduler 'download' returns current schedule status."""
         with self._lock:
             schedules = {
@@ -85,16 +85,21 @@ class SchedulerAgent(DownloaderBase):
                 for sid, s in self._schedules.items()
             }
         return DownloadResult(
-            task_id=self._task_id if hasattr(self, '_task_id') else "scheduler-status",
-            status=DownloadStatus.COMPLETED.value,
+            task_id=task.task_id if task else "scheduler-status",
+            url=task.url if task else "",
+            status=DownloadStatus.COMPLETED,
             metadata={"schedules": schedules},
         )
 
-    def on_verify(self) -> bool:
-        return True
+    def on_verify(self, task: DownloadTask = None, result: DownloadResult = None) -> DownloadResult:
+        if result is not None:
+            return result
+        return DownloadResult(status=DownloadStatus.COMPLETED)
 
-    def on_post_process(self) -> None:
-        pass
+    def on_post_process(self, task: DownloadTask = None, result: DownloadResult = None) -> DownloadResult:
+        if result is not None:
+            return result
+        return DownloadResult(status=DownloadStatus.COMPLETED)
 
     # -- Scheduling Methods --
 

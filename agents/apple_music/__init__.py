@@ -231,13 +231,13 @@ class AppleMusicDownloader(DownloaderBase):
         """Sanitize filename."""
         return re.sub(r'[<>:"|?*\\]', '_', name)[:200]
 
-    def on_verify(self, result: DownloadResult) -> bool:
+    def on_verify(self, task=None, result=None):
         """Verify downloaded content."""
         if not result.file_path or not os.path.exists(result.file_path):
             return False
         return os.path.getsize(result.file_path) > 0
 
-    def on_post_process(self, result: DownloadResult) -> DownloadResult:
+    def on_post_process(self, task=None, result=None):
         """Post-process: apply tags to preview, compute checksum."""
         if result.file_path and os.path.exists(result.file_path):
             ext = os.path.splitext(result.file_path)[1].lower()

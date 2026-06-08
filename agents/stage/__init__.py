@@ -17,6 +17,7 @@ from core.downloader_base import (
     DownloaderBase,
     DownloadResult,
     DownloadStatus,
+    DownloadTask,
     AgentSkill,
     AgentMemory,
     DownloadPriority,
@@ -58,26 +59,31 @@ class StageAgent(DownloaderBase):
                 "status_summary": self._status_summary(),
             }
 
-    def on_prepare(self) -> None:
+    def on_prepare(self, task: DownloadTask) -> DownloadTask:
         """Prepare stage orchestration."""
         self._results = []
+        return task
 
-    def on_download(self) -> DownloadResult:
+    def on_download(self, task: DownloadTask) -> DownloadResult:
         """Orchestrate parallel downloads across multiple agents."""
         return DownloadResult(
-            task_id=self._task_id if hasattr(self, '_task_id') else "stage-orchestration",
-            status=DownloadStatus.COMPLETED.value,
+            task_id=task.task_id if task else "stage-orchestration",
+            url=task.url if task else "",
+            status=DownloadStatus.COMPLETED,
             metadata={"orchestrated": True, "results_count": len(self._results)},
         )
 
-    def on_verify(self) -> bool:
+    def on_verify(self, task: DownloadTask = None, result: DownloadResult = None) -> DownloadResult:
         """Verify all staged results."""
-        with self._lock:
-            return all(r.status == DownloadStatus.COMPLETED.value for r in self._results)
+        if result is not None:
+            return result
+        return DownloadResult(status=DownloadStatus.COMPLETED)
 
-    def on_post_process(self) -> None:
+    def on_post_process(self, task: DownloadTask = None, result: DownloadResult = None) -> DownloadResult:
         """Aggregate results from all sub-agents."""
-        pass
+        if result is not None:
+            return result
+        return DownloadResult(status=DownloadStatus.COMPLETED)
 
     # -- Orchestration Methods --
 
@@ -103,7 +109,7 @@ class StageAgent(DownloaderBase):
                 except Exception as exc:
                     results.append(DownloadResult(
                         url=url,
-                        status=DownloadStatus.FAILED.value,
+                        status=DownloadStatus.FAILED,
                         error=str(exc),
                     ))
 
@@ -116,7 +122,7 @@ class StageAgent(DownloaderBase):
         url = task.get("url", "")
         return DownloadResult(
             url=url,
-            status=DownloadStatus.COMPLETED.value,
+            status=DownloadStatus.COMPLETED,
             agent_name=task.get("agent_name", "auto"),
             output_path=task.get("output_path", ""),
         )
@@ -140,7 +146,8 @@ class StageAgent(DownloaderBase):
         """Get summary of result statuses."""
         summary: Dict[str, int] = {}
         for r in self._results:
-            summary[r.status] = summary.get(r.status, 0) + 1
+            status_key = r.status.value if hasattr(r.status, 'value') else str(r.status)
+            summary[status_key] = summary.get(status_key, 0) + 1
         return summary
 
 

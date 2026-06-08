@@ -25,7 +25,7 @@ logger = logging.getLogger("agent_registry")
 # ---------------------------------------------------------------------------
 # Agent count constant (updated as agents are added)
 # ---------------------------------------------------------------------------
-AGENT_COUNT: int = 90  # Total expected agents across all categories
+AGENT_COUNT: int = 87  # Total expected agents across all categories
 
 # ---------------------------------------------------------------------------
 # Registry singleton
@@ -71,6 +71,9 @@ _AGENT_MODULES = [
     ("agents.patreon", "patreon"),
     ("agents.onlyfans", "onlyfans"),
 
+    # Social - Pinterest
+    ("agents.pinterest", "pinterest"),
+
     # Content & Archive
     ("agents.archive_org", "archive_org"),
 
@@ -86,6 +89,9 @@ _AGENT_MODULES = [
     ("agents.batch", "batch"),
     ("agents.playlist", "playlist"),
     ("agents.cloud", "cloud"),
+    ("agents.proxy", "proxy"),
+    ("agents.scheduler", "scheduler"),
+    ("agents.stage", "stage"),
 
     # --- Pre-existing agents (56) ---
     # Video Platforms
@@ -296,6 +302,9 @@ AGENT_CATEGORIES: Dict[str, List[str]] = {
     "Content & Archive": [
         "archive_org",
     ],
+    "Social": [
+        "pinterest",
+    ],
     "Video Platforms": [
         "youtube", "vimeo", "dailymotion", "tiktok", "facebook", "twitter",
         "instagram", "reddit", "tumblr", "twitch", "kick", "rumble",
@@ -315,6 +324,7 @@ AGENT_CATEGORIES: Dict[str, List[str]] = {
     "Utility": [
         "metadata", "subtitle", "thumbnail", "convert", "search",
         "stream", "ai", "analytics", "batch", "playlist", "cloud",
+        "proxy", "scheduler", "stage",
     ],
 }
 

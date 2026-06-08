@@ -31,7 +31,7 @@ setup(
     description="The Ultimate Download Toolkit by RS - Video, Audio, Playlist & Batch Downloading",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/T3rmuxk1ng/rs-downloader",
+    url="https://github.com/usekarne/Downloader",
     license="MIT",
     packages=find_packages(exclude=["tests", "tests.*", "docs", "docs.*"]),
     include_package_data=True,
@@ -100,8 +100,8 @@ setup(
         "batch-download", "yt-dlp", "rs-downloader", "t3rmuxk1ng",
     ],
     project_urls={
-        "Bug Tracker": "https://github.com/T3rmuxk1ng/rs-downloader/issues",
-        "Documentation": "https://github.com/T3rmuxk1ng/rs-downloader/wiki",
-        "Source Code": "https://github.com/T3rmuxk1ng/rs-downloader",
+        "Bug Tracker": "https://github.com/usekarne/Downloader/issues",
+        "Documentation": "https://github.com/usekarne/Downloader/wiki",
+        "Source Code": "https://github.com/usekarne/Downloader",
     },
 )
