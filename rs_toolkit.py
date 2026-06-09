@@ -406,7 +406,7 @@ class LocalOrchestrator:
 
     def download(self, url, **kwargs):
         dl_id = generate_id("dl")
-        output_dir = kwargs.get("output_dir", self.config.get("download.output_dir"))
+        output_dir = kwargs.get("output_dir", self.config.get("storage.download_dir") or self.config.get("storage.download_dir") or config.get("download.output_dir"))
         ensure_dir(output_dir)
         platform_info = detect_platform(url) if detect_platform else None
         platform_name = platform_info.platform_id if platform_info else "generic"
@@ -440,7 +440,7 @@ class LocalOrchestrator:
 
     def _build_ydl_opts(self, url, **kwargs):
         opts = {
-            "outtmpl": str(Path(kwargs.get("output_dir", self.config.get("download.output_dir")))
+            "outtmpl": str(Path(kwargs.get("output_dir", self.config.get("storage.download_dir") or self.config.get("storage.download_dir") or config.get("download.output_dir")))
                            / "%(title)s.%(ext)s"),
             "quiet": kwargs.get("quiet", False),
             "no_warnings": True,
@@ -631,7 +631,7 @@ class LocalOrchestrator:
     def mirror(self, url, **kwargs):
         if not shutil.which("wget"):
             return {"status": "error", "error": "wget not found"}
-        output_dir = kwargs.get("output_dir", self.config.get("download.output_dir"))
+        output_dir = kwargs.get("output_dir", self.config.get("storage.download_dir") or self.config.get("storage.download_dir") or config.get("download.output_dir"))
         depth = kwargs.get("depth", 3)
         domains = kwargs.get("domains", "")
         cmd = ["wget", "--mirror", "--directory-prefix", output_dir,
@@ -650,7 +650,7 @@ class LocalOrchestrator:
             return {"status": "error", "error": "wget not found"}
         depth = kwargs.get("depth", 2)
         types = kwargs.get("types", "")
-        output_dir = kwargs.get("output_dir", self.config.get("download.output_dir"))
+        output_dir = kwargs.get("output_dir", self.config.get("storage.download_dir") or self.config.get("storage.download_dir") or config.get("download.output_dir"))
         cmd = ["wget", "--recursive", "--level", str(depth),
                "--directory-prefix", output_dir, "--no-clobber"]
         if types:
@@ -665,7 +665,7 @@ class LocalOrchestrator:
     def download_torrent(self, magnet_or_file, **kwargs):
         if not shutil.which("aria2c") and not shutil.which("webtorrent"):
             return {"status": "error", "error": "No torrent client found (aria2c/webtorrent)"}
-        output_dir = kwargs.get("output_dir", self.config.get("download.output_dir"))
+        output_dir = kwargs.get("output_dir", self.config.get("storage.download_dir") or self.config.get("storage.download_dir") or config.get("download.output_dir"))
         seed_ratio = kwargs.get("seed_ratio", 1.0)
         if shutil.which("aria2c"):
             cmd = ["aria2c", "--seed-ratio", str(seed_ratio), "--dir", output_dir, magnet_or_file]
@@ -1463,7 +1463,8 @@ class CommandHandler:
             return args.output
         if hasattr(self.config, 'get'):
             try:
-                return self.config.get("download", "output_dir") if CORE_CONFIG_AVAILABLE else self.config.get("download.output_dir")
+                # Try dot-notation first (works for both LocalConfigManager and CoreConfigManager)
+                return self.config.get("storage.download_dir") or self.config.get("storage.download_dir") or self.config.get("storage.download_dir") or config.get("download.output_dir")
             except (TypeError, AttributeError):
                 pass
         return str(Path.home() / "Downloads" / "RS-Downloader")
@@ -3208,7 +3209,7 @@ def quick_download(url, output_dir=None, quality=None):
     platform = auto_detect_platform(url)
     content_type = detect_content_type_from_url(url)
 
-    kwargs = {"output_dir": output_dir or config.get("download.output_dir")}
+    kwargs = {"output_dir": output_dir or config.get("storage.download_dir") or config.get("download.output_dir")}
 
     # Apply quality preset if specified
     if quality and quality in QUALITY_PRESETS:

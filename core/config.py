@@ -695,31 +695,63 @@ class ConfigManager:
             except TypeError as e:
                 logger.warning("Invalid config override for %s: %s", section_name, e)
 
-    def get(self, section: str, key: str, default: Any = None) -> Any:
+    def get(self, section: str, key: str = None, default: Any = None) -> Any:
         """
         Get a configuration value.
 
+        Supports two calling patterns:
+            get("section.key")           - dot-notation (single arg)
+            get("section", "key")        - explicit section+key (two args)
+
         Args:
-            section: Section name (e.g., 'timeout', 'retry').
-            key: Key within the section.
+            section: Section name (e.g., 'timeout', 'retry') or dot-notation path.
+            key: Key within the section (optional, if using dot-notation).
             default: Default value if key not found.
 
         Returns:
             The configuration value, or default.
         """
+        # Support dot-notation: get("section.key")
+        if key is None and '.' in section:
+            section, key = section.split('.', 1)
         with self._lock:
             if section not in self._sections:
                 return default
+            if key is None:
+                # Return entire section as dict
+                return asdict(self._sections[section])
             section_data = self._sections[section]
             data_dict = asdict(section_data)
             return data_dict.get(key, default)
 
-    def set(self, section: str, key: str, value: Any) -> None:
+    def set(self, section_or_path: str, key_or_value=None, value=None) -> None:
         """
         Set a configuration value and notify listeners.
 
+        Supports two calling patterns:
+            set("section.key", value)     - dot-notation
+            set("section", "key", value)  - explicit section+key
+
         Note: Since dataclasses are frozen, this replaces the entire section.
         """
+        # Parse the calling convention
+        if value is not None:
+            # set("section", "key", value)
+            section = section_or_path
+            key = key_or_value
+        elif key_or_value is not None:
+            # set("section.key", value)
+            section = section_or_path
+            value = key_or_value
+            if '.' in section:
+                section, key = section.split('.', 1)
+            else:
+                logger.warning("Invalid set() call: no key specified for section '%s'", section)
+                return
+        else:
+            logger.warning("Invalid set() call: no value specified")
+            return
+
         with self._lock:
             if section not in self._sections:
                 logger.warning("Unknown config section: %s", section)
@@ -1157,4 +1189,7 @@ class ConfigManager:
         return f"ConfigManager(profile={self._profile!r}, sections={len(self._sections)})"
 
     def __del__(self) -> None:
-        self.stop_watching()
+        try:
+            self.stop_watching()
+        except Exception:
+            pass  # Ignore errors during Python shutdown
