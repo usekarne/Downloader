@@ -88,8 +88,12 @@ class LifecycleError(Exception):
 
 
 class DownloadError(Exception):
-    """General download error."""
-    pass
+    """General download error with optional context fields."""
+
+    def __init__(self, message: str = "", *, url: str = "", agent: str = "") -> None:
+        super().__init__(message)
+        self.url = url
+        self.agent = agent
 
 
 class AgentNotFoundError(Exception):
@@ -219,6 +223,8 @@ class DownloadTask:
     chunk_ranges: List[Tuple[int, int]] = field(default_factory=list)
     etag: str = ""
     last_modified: str = ""
+    options: Dict[str, Any] = field(default_factory=dict)
+    cookies: str = ""
 
     def __post_init__(self) -> None:
         """Calculate the sort key from priority and enqueue time."""
@@ -258,6 +264,7 @@ class DownloadTask:
             "callback_url": self.callback_url,
             "etag": self.etag,
             "last_modified": self.last_modified,
+            "options": self.options,
         }
 
 
@@ -2472,6 +2479,7 @@ class DownloaderBase(abc.ABC):
         # Common agent attributes that agents may access
         self.headers = kwargs.get('headers', {})
         self.proxy = kwargs.get('proxy', '')
+        self.cookies = kwargs.get('cookies', '')
         self.timeout = kwargs.get('timeout', 30)
         self.output_dir = kwargs.get('output_dir', '.')
         self.memory = kwargs.get('memory', AgentMemory(name))
@@ -2485,6 +2493,11 @@ class DownloaderBase(abc.ABC):
         )
         self._lifecycle: Dict[str, DownloadLifecycle] = {}
         self._lock = threading.Lock()
+
+    def _ensure_output_dir(self, path: str) -> str:
+        """Ensure output directory exists, creating it if necessary."""
+        os.makedirs(path, exist_ok=True)
+        return path
 
     @abc.abstractmethod
     def validate_url(self, url: str) -> bool:
@@ -2661,7 +2674,9 @@ class DownloaderBase(abc.ABC):
                 lifecycle.transition(DownloadStatus.QUEUED)
 
             # 1. Prepare
-            task = self.on_prepare(task)
+            prepared = self.on_prepare(task)
+            if prepared is not None:
+                task = prepared
 
             # 2. Download
             if lifecycle.can_transition(DownloadStatus.DOWNLOADING):

@@ -180,7 +180,7 @@ class AIAgent(DownloaderBase):
         }
 
     def on_prepare(self, task: DownloadTask) -> None:
-        out_dir = self._ensure_output_dir(task.output_dir)
+        out_dir = self._ensure_output_dir(task.output_path)
         task.options["output_dir"] = out_dir
 
     def on_download(self, task: DownloadTask) -> DownloadResult:

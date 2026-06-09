@@ -150,7 +150,7 @@ class S3Downloader(DownloaderBase):
         if not self.validate_url(task.url):
             raise DownloadError(f"Invalid S3 URL: {task.url}",
                                 url=task.url, agent=self.AGENT_NAME)
-        out_dir = self._ensure_output_dir(task.output_dir)
+        out_dir = self._ensure_output_dir(task.output_path)
         task.options["output_dir"] = out_dir
         endpoint, bucket, key = self._parse_s3_url(task.url)
         task.options["endpoint"] = endpoint

@@ -78,7 +78,7 @@ class OnlyFansDownloader(DownloaderBase):
             raise DownloadError(f"Invalid OnlyFans URL: {task.url}", url=task.url, agent=self.AGENT_NAME)
         if not self.cookies and not task.cookies:
             raise DownloadError("OnlyFans requires cookie authentication", url=task.url, agent=self.AGENT_NAME)
-        out_dir = self._ensure_output_dir(task.output_dir)
+        out_dir = self._ensure_output_dir(task.output_path)
         task.options["output_dir"] = out_dir
 
     def on_download(self, task: DownloadTask) -> DownloadResult:

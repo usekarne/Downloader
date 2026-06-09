@@ -114,7 +114,7 @@ class DropboxDownloader(DownloaderBase):
         if not self.validate_url(task.url):
             raise DownloadError(f"Invalid Dropbox URL: {task.url}",
                                 url=task.url, agent=self.AGENT_NAME)
-        out_dir = self._ensure_output_dir(task.output_dir)
+        out_dir = self._ensure_output_dir(task.output_path)
         task.options["output_dir"] = out_dir
 
     def _ensure_output_dir(self, path: str) -> str:

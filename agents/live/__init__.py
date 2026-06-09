@@ -158,7 +158,7 @@ class LiveDownloader(DownloaderBase):
             raise DownloadError(
                 f"Invalid live stream URL: {task.url}",
                 url=task.url, agent=self.AGENT_NAME)
-        out_dir = self._ensure_output_dir(task.output_dir)
+        out_dir = self._ensure_output_dir(task.output_path)
         task.options["output_dir"] = out_dir
         task.options["protocol"] = self._detect_protocol(task.url)
         # Set defaults for recording

@@ -91,7 +91,7 @@ class CloudAgent(DownloaderBase):
         except Exception as exc:
             return {"success": False, "error": str(exc)}
 
-    def download(self, remote_url: str, local_path: str = "") -> Dict[str, Any]:
+    def _download_cloud(self, remote_url: str, local_path: str = "") -> Dict[str, Any]:
         """Download from cloud storage."""
         provider = self._detect_provider(remote_url)
         out_path = local_path or self.output_dir
@@ -145,7 +145,7 @@ class CloudAgent(DownloaderBase):
         return {"platform": "cloud", "url": url, "provider": self._detect_provider(url)}
 
     def on_prepare(self, task: DownloadTask) -> None:
-        out_dir = self._ensure_output_dir(task.output_dir)
+        out_dir = self._ensure_output_dir(task.output_path)
         task.options["output_dir"] = out_dir
 
     def on_download(self, task: DownloadTask) -> DownloadResult:
@@ -167,7 +167,7 @@ class CloudAgent(DownloaderBase):
             elif action == "list":
                 data = self.list_remote(task.url)
             else:
-                data = self.download(task.url, out_dir)
+                data = self._download_cloud(task.url, out_dir)
             result.metadata = data
             result.status = DownloadStatus.VERIFYING
             if data.get("local_path") and os.path.exists(data["local_path"]):
